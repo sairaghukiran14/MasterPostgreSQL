@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master PostgreSQL — 140 Hands-On Challenges</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <h1>🐘 Master PostgreSQL</h1>
+    <p>Booting a real PostgreSQL engine in your browser…</p>
+    <p class="muted small">(PGlite / WebAssembly — first load fetches ~3&nbsp;MB from a CDN)</p>
+  </div>
+
+  <div id="app" style="display:none">
+    <div id="overlay"></div>
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="brand">
+        <span class="logo">🐘</span>
+        <div>
+          <div class="brand-title">Master PostgreSQL</div>
+          <div class="brand-sub">14 topics · 140 challenges</div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-top"><span id="overall">0 / 140 solved</span></div>
+        <div class="progress-track"><div id="overall-bar" class="progress-fill"></div></div>
+      </div>
+      <nav id="topics"></nav>
+      <button id="reset-progress" class="link-btn">Reset progress</button>
+    </aside>
+
+    <!-- Main -->
+    <main id="main">
+      <header id="topbar">
+        <div class="crumbs">
+          <button id="menu-toggle" class="icon-btn" aria-label="Toggle topics menu">☰</button>
+          <span id="ch-topic" class="crumb-topic"></span>
+          <span class="crumb-sep">›</span>
+          <span id="ch-title" class="crumb-title"></span>
+          <span id="ch-solved" class="solved-pill">✓ solved</span>
+        </div>
+        <div class="top-actions">
+          <span id="ch-level" class="badge"></span>
+          <button id="toggle-schema" class="ghost-btn">Schema</button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <div class="prompt-card">
+          <p id="ch-prompt" class="prompt-text"></p>
+          <div class="prompt-tools">
+            <button id="btn-hint" class="chip">Hint</button>
+            <button id="btn-solution" class="chip">Show solution</button>
+          </div>
+          <div id="hint" class="reveal hint" style="display:none"></div>
+          <pre id="solution" class="reveal solution" style="display:none"></pre>
+        </div>
+
+        <div class="editor-card">
+          <div class="editor-head">
+            <span>SQL Editor</span>
+            <span class="kbd-hints">⌘/Ctrl+↵ run · ⇧+↵ check</span>
+          </div>
+          <textarea id="editor" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="editor-actions">
+            <button id="run" class="btn btn-secondary">Run ▶</button>
+            <button id="check" class="btn btn-primary">Check answer ✓</button>
+            <button id="btn-reset" class="btn btn-ghost">Clear</button>
+            <div class="spacer"></div>
+            <button id="prev" class="btn btn-ghost">‹ Prev</button>
+            <button id="next" class="btn btn-ghost">Next ›</button>
+          </div>
+        </div>
+
+        <div id="result" class="result-card"></div>
+      </section>
+    </main>
+
+    <!-- Schema slide-over -->
+    <div id="schema-panel">
+      <div class="schema-head">
+        <strong>Database schema</strong>
+        <button class="ghost-btn" onclick="document.getElementById('schema-panel').classList.remove('open')">✕</button>
+      </div>
+      <p class="muted small">A company + e-commerce dataset. Every challenge runs against these live tables.</p>
+      <div id="schema-content"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
