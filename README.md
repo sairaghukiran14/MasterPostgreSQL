@@ -22,6 +22,14 @@ The UI is **fully responsive**: on phones/tablets the topic list collapses into 
 slide-in drawer (tap **☰**), the editor toolbar stacks, and the schema view goes
 full-screen; on desktop the sidebar stays pinned.
 
+## Learn, then practice
+
+Every topic opens with a **📚 Concepts to learn** card: a short summary plus the
+key ideas for that topic, each with a one-line explanation and a tiny SQL example
+(e.g. `OVER()`, `PARTITION BY`, `LEFT JOIN`, `ON CONFLICT`). Read it first, then
+solve the 10 challenges to lock it in. The card is collapsible (your choice is
+remembered) so it stays out of the way once a topic clicks.
+
 ## How to use it
 
 1. Pick a topic in the sidebar and a challenge.

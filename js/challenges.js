@@ -18,6 +18,19 @@ export const TOPICS = [
     id: 'select-basics',
     name: '1 · SELECT Basics',
     blurb: 'Projection, aliases, expressions, DISTINCT, LIMIT.',
+    learn: {
+      summary: 'A query reads rows from a table and returns a chosen set of columns. SELECT decides the columns, FROM decides the source.',
+      concepts: [
+        { name: 'SELECT … FROM', detail: 'List the columns you want, then the table they come from.', example: 'SELECT name, price FROM products;' },
+        { name: 'Select all columns', detail: '* is shorthand for "every column". Handy while exploring, avoid in production code.', example: 'SELECT * FROM products;' },
+        { name: 'Aliases (AS)', detail: 'Rename a column in the output. AS is optional but clearer.', example: 'SELECT price AS cost FROM products;' },
+        { name: 'Computed columns', detail: 'SELECT can contain expressions, not just column names.', example: 'SELECT price * 1.1 AS gross FROM products;' },
+        { name: 'Concatenation (||)', detail: 'Join text values into one string with the || operator.', example: "SELECT name || ' - ' || country FROM customers;" },
+        { name: 'DISTINCT', detail: 'Remove duplicate rows from the result.', example: 'SELECT DISTINCT country FROM customers;' },
+        { name: 'LIMIT', detail: 'Cap how many rows come back.', example: 'SELECT * FROM products LIMIT 5;' },
+        { name: 'No FROM needed', detail: 'You can SELECT constants and expressions on their own.', example: "SELECT 'hello', 2 + 2;" },
+      ],
+    },
     challenges: [
       { id: 'sb1', level: 1, title: 'Select everything',
         prompt: 'Return every column and every row from the products table.',
@@ -65,6 +78,17 @@ export const TOPICS = [
     id: 'filtering',
     name: '2 · Filtering (WHERE)',
     blurb: 'Comparisons, AND/OR/NOT, BETWEEN, IN, LIKE, NULL.',
+    learn: {
+      summary: 'WHERE keeps only the rows that satisfy a condition. It runs before grouping and sorting, so it decides which rows even enter the rest of the query.',
+      concepts: [
+        { name: 'Comparison operators', detail: 'Use = <> < > <= >= to compare values. Not-equal is <> (or !=).', example: "SELECT * FROM products WHERE price > 100;" },
+        { name: 'AND / OR / NOT', detail: 'Combine conditions. Use parentheses to control precedence — AND binds tighter than OR.', example: 'WHERE stock < 50 OR price > 300' },
+        { name: 'BETWEEN', detail: 'Range test, inclusive of both ends.', example: 'WHERE price BETWEEN 20 AND 50' },
+        { name: 'IN (list)', detail: 'Match any value in a set — cleaner than many ORs.', example: "WHERE country IN ('UK','Germany')" },
+        { name: 'LIKE / ILIKE', detail: 'Pattern match: % = any run of characters, _ = one character. ILIKE is case-insensitive.', example: "WHERE name ILIKE '%book%'" },
+        { name: 'NULL handling', detail: 'NULL means "unknown". Test it with IS NULL / IS NOT NULL — never = NULL.', example: 'WHERE email IS NULL' },
+      ],
+    },
     challenges: [
       { id: 'f1', level: 1, title: 'Greater than',
         prompt: 'Return all products with a price above 100.',
@@ -107,6 +131,16 @@ export const TOPICS = [
     id: 'sorting',
     name: '3 · Sorting & Limiting',
     blurb: 'ORDER BY, LIMIT/OFFSET, NULLS, DISTINCT ordering.',
+    learn: {
+      summary: 'ORDER BY sorts the result; LIMIT/OFFSET slice it. Without ORDER BY, row order is not guaranteed — so any "top N" query needs an explicit sort.',
+      concepts: [
+        { name: 'ORDER BY', detail: 'Sort by one or more columns. ASC (default) is ascending, DESC descending.', example: 'ORDER BY price DESC' },
+        { name: 'Multiple sort keys', detail: 'Ties on the first key are broken by the next.', example: 'ORDER BY department_id, salary DESC' },
+        { name: 'LIMIT', detail: 'Return at most N rows — combine with ORDER BY for "top N".', example: 'ORDER BY salary DESC LIMIT 3' },
+        { name: 'OFFSET', detail: 'Skip the first N rows — the basis of pagination.', example: 'ORDER BY price DESC LIMIT 2 OFFSET 1' },
+        { name: 'NULLS FIRST / LAST', detail: 'Control where NULLs land in the sort order.', example: 'ORDER BY email NULLS LAST' },
+      ],
+    },
     challenges: [
       { id: 's1', level: 1, title: 'Order descending', ordered: true,
         prompt: 'Return all products ordered by price from highest to lowest.',
@@ -152,6 +186,17 @@ export const TOPICS = [
     id: 'aggregates',
     name: '4 · Aggregate Functions',
     blurb: 'COUNT, SUM, AVG, MIN, MAX, ROUND, DISTINCT.',
+    learn: {
+      summary: 'Aggregate functions collapse many rows into a single summary value. With no GROUP BY, the whole table becomes one group.',
+      concepts: [
+        { name: 'The core five', detail: 'count, sum, avg, min, max summarize a column across rows.', example: 'SELECT avg(salary), max(salary) FROM employees;' },
+        { name: 'count(*) vs count(col)', detail: 'count(*) counts rows; count(col) counts non-NULL values of that column.', example: 'SELECT count(*), count(email) FROM employees;' },
+        { name: 'count(DISTINCT …)', detail: 'Count how many distinct values a column has.', example: 'SELECT count(DISTINCT country) FROM customers;' },
+        { name: 'Aggregates skip NULLs', detail: 'avg/sum/min/max ignore NULL inputs (count(*) does not).', example: 'SELECT avg(salary) FROM employees;' },
+        { name: 'round(x, n)', detail: 'Round a numeric result to n decimal places for tidy output.', example: 'SELECT round(avg(price), 2) FROM products;' },
+        { name: 'Aggregate a subset', detail: 'Add WHERE to summarize only matching rows.', example: "SELECT sum(total) FROM orders WHERE status='delivered';" },
+      ],
+    },
     challenges: [
       { id: 'a1', level: 1, title: 'Count rows',
         prompt: 'Return the total number of employees.',
@@ -193,6 +238,15 @@ export const TOPICS = [
     id: 'grouping',
     name: '5 · GROUP BY & HAVING',
     blurb: 'Grouping rows, per-group aggregates, HAVING filters.',
+    learn: {
+      summary: 'GROUP BY splits rows into groups and runs aggregates per group — one output row per group. HAVING then filters those groups.',
+      concepts: [
+        { name: 'GROUP BY', detail: 'Collapse rows that share the same value(s) into one row, with aggregates computed per group.', example: 'SELECT department_id, count(*) FROM employees GROUP BY department_id;' },
+        { name: 'The grouping rule', detail: 'Every SELECT column that is not inside an aggregate must appear in GROUP BY.', example: 'SELECT status, sum(total) FROM orders GROUP BY status;' },
+        { name: 'Group by several columns', detail: 'Groups are formed by the combination of all listed columns.', example: 'GROUP BY country, city' },
+        { name: 'HAVING vs WHERE', detail: 'WHERE filters rows before grouping; HAVING filters groups after aggregation.', example: 'GROUP BY customer_id HAVING sum(total) > 200' },
+      ],
+    },
     challenges: [
       { id: 'g1', level: 2, title: 'Count per group',
         prompt: 'Return each department_id and the number of employees in it.',
@@ -241,6 +295,17 @@ export const TOPICS = [
     id: 'joins',
     name: '6 · Joins',
     blurb: 'INNER, LEFT, self joins, anti-joins, multi-table joins.',
+    learn: {
+      summary: 'Joins combine rows from two tables by matching a condition (usually a foreign key = primary key). The join type decides what happens to rows with no match.',
+      concepts: [
+        { name: 'INNER JOIN', detail: 'Keep only rows that have a match in both tables.', example: 'FROM employees e JOIN departments d ON e.department_id = d.id' },
+        { name: 'LEFT JOIN', detail: 'Keep every left-table row; unmatched right columns come back NULL.', example: 'FROM customers c LEFT JOIN orders o ON o.customer_id = c.id' },
+        { name: 'Self join', detail: 'Join a table to itself using two aliases — e.g. employee to manager.', example: 'FROM employees e LEFT JOIN employees m ON e.manager_id = m.id' },
+        { name: 'Anti-join', detail: 'LEFT JOIN then keep rows where the right side is NULL = "has no match".', example: 'LEFT JOIN order_items oi ON … WHERE oi.id IS NULL' },
+        { name: 'Multi-table joins', detail: 'Chain several ON clauses to walk across related tables.', example: 'order_items → products → categories' },
+        { name: 'Qualify columns', detail: 'When a name exists in both tables, prefix it with the table/alias.', example: 'SELECT e.name, d.name' },
+      ],
+    },
     challenges: [
       { id: 'j1', level: 2, title: 'Inner join',
         prompt: 'Return each employee name together with their department name.',
@@ -289,6 +354,17 @@ export const TOPICS = [
     id: 'subqueries',
     name: '7 · Subqueries',
     blurb: 'Scalar, IN, EXISTS, correlated subqueries.',
+    learn: {
+      summary: 'A subquery is a query nested inside another. It can produce a single value, a list, or a truth test that the outer query uses.',
+      concepts: [
+        { name: 'Scalar subquery', detail: 'Returns one value; drop it anywhere a value is expected.', example: 'WHERE price > (SELECT avg(price) FROM products)' },
+        { name: 'IN (subquery)', detail: 'Match against the set of values a subquery returns.', example: 'WHERE id IN (SELECT customer_id FROM orders)' },
+        { name: 'EXISTS', detail: 'True if the subquery returns any row — stops at the first match.', example: 'WHERE EXISTS (SELECT 1 FROM order_items oi WHERE oi.product_id = p.id)' },
+        { name: 'NOT EXISTS', detail: 'The classic "has none" test — rows with no related match.', example: 'WHERE NOT EXISTS (…)' },
+        { name: 'Correlated subquery', detail: 'References a column from the outer row, so it is re-evaluated per row.', example: 'WHERE salary > (SELECT avg(salary) FROM employees e2 WHERE e2.department_id = e.department_id)' },
+        { name: 'Subquery in SELECT', detail: 'A scalar subquery can compute a per-row value in the output.', example: 'SELECT name, (SELECT count(*) FROM orders o WHERE o.customer_id = c.id) FROM customers c' },
+      ],
+    },
     challenges: [
       { id: 'q1', level: 3, title: 'Above average price',
         prompt: 'Return products whose price is above the average product price.',
@@ -337,6 +413,17 @@ export const TOPICS = [
     id: 'functions',
     name: '8 · String, Date & Math',
     blurb: 'upper/length/substring, to_char/extract, round/ceil/floor.',
+    learn: {
+      summary: 'PostgreSQL ships hundreds of built-in functions to transform text, dates and numbers right inside a query.',
+      concepts: [
+        { name: 'String functions', detail: 'upper/lower, length, left/right, substring, replace reshape text.', example: "SELECT upper(name), length(name) FROM products;" },
+        { name: 'EXTRACT / date_part', detail: 'Pull a field (year, month, day…) out of a date or timestamp.', example: 'SELECT EXTRACT(YEAR FROM signup_date) FROM customers;' },
+        { name: 'to_char formatting', detail: 'Format dates/numbers into text with a pattern.', example: "SELECT to_char(signup_date, 'YYYY-MM');" },
+        { name: 'Math functions', detail: 'round, ceil, floor, abs, mod for numeric work.', example: 'SELECT round(price), ceil(price), floor(price) FROM products;' },
+        { name: 'COALESCE', detail: 'Return the first non-NULL argument — great for defaults.', example: "SELECT coalesce(email, 'no-email') FROM employees;" },
+        { name: 'Casting (::type)', detail: 'Convert a value to another type.', example: "SELECT (info->>'newsletter')::boolean;" },
+      ],
+    },
     challenges: [
       { id: 'fn1', level: 1, title: 'Upper case',
         prompt: 'Return every product name in UPPERCASE.',
@@ -379,6 +466,17 @@ export const TOPICS = [
     id: 'conditional',
     name: '9 · CASE & Conditional Logic',
     blurb: 'CASE, COALESCE, NULLIF, GREATEST/LEAST, FILTER.',
+    learn: {
+      summary: 'Conditional expressions let a query make decisions per row — labeling, bucketing, choosing defaults, and building pivot-style summaries.',
+      concepts: [
+        { name: 'CASE', detail: 'The SQL if/else. Evaluate WHENs in order; ELSE is the fallback.', example: "CASE WHEN price >= 100 THEN 'expensive' ELSE 'cheap' END" },
+        { name: 'COALESCE', detail: 'First non-NULL wins — supply a default for missing data.', example: "coalesce(email, 'N/A')" },
+        { name: 'NULLIF', detail: 'Returns NULL when two values are equal — handy to avoid divide-by-zero.', example: 'total / NULLIF(quantity, 0)' },
+        { name: 'GREATEST / LEAST', detail: 'Pick the largest / smallest of several values in a row.', example: 'LEAST(price, 100)' },
+        { name: 'Conditional aggregates', detail: 'SUM(CASE WHEN …) or count(*) FILTER (WHERE …) build pivot-style counts.', example: "count(*) FILTER (WHERE status='delivered')" },
+        { name: 'Boolean expressions', detail: 'A comparison itself yields true/false you can select.', example: 'SELECT name, email IS NOT NULL AS has_email FROM employees;' },
+      ],
+    },
     challenges: [
       { id: 'c1', level: 2, title: 'Simple CASE',
         prompt: "Return each product name and a label: 'expensive' when price >= 100, otherwise 'cheap'.",
@@ -427,6 +525,16 @@ export const TOPICS = [
     id: 'set-ops',
     name: '10 · Set Operations',
     blurb: 'UNION, UNION ALL, INTERSECT, EXCEPT.',
+    learn: {
+      summary: 'Set operations stack the results of two queries vertically. Both queries must return the same number of columns with compatible types.',
+      concepts: [
+        { name: 'UNION', detail: 'Combine two result sets and remove duplicate rows.', example: 'SELECT city FROM customers UNION SELECT location FROM departments;' },
+        { name: 'UNION ALL', detail: 'Combine but keep duplicates — faster because it skips de-duplication.', example: "SELECT name FROM a UNION ALL SELECT name FROM b;" },
+        { name: 'INTERSECT', detail: 'Rows that appear in both queries.', example: 'SELECT city FROM customers INTERSECT SELECT location FROM departments;' },
+        { name: 'EXCEPT', detail: 'Rows in the first query that are not in the second.', example: 'SELECT city FROM customers EXCEPT SELECT location FROM departments;' },
+        { name: 'Column rules', detail: 'Column count and types must line up; output column names come from the first query.', example: "SELECT name, 'product' AS src FROM products UNION ALL SELECT name, 'customer' FROM customers;" },
+      ],
+    },
     challenges: [
       { id: 'so1', level: 3, title: 'UNION distinct',
         prompt: 'Return a single distinct list of all place names: every customer city combined with every department location.',
@@ -475,6 +583,17 @@ export const TOPICS = [
     id: 'window',
     name: '11 · Window Functions',
     blurb: 'ROW_NUMBER, RANK, LAG/LEAD, running totals, PARTITION BY.',
+    learn: {
+      summary: 'Window functions compute across a set of rows related to the current row — like aggregates, but without collapsing the rows. The OVER() clause defines that window.',
+      concepts: [
+        { name: 'OVER()', detail: 'Turns a function into a window function, computed per row across the window.', example: 'avg(salary) OVER ()' },
+        { name: 'PARTITION BY', detail: 'Split rows into independent windows (like GROUP BY, but rows stay).', example: 'avg(salary) OVER (PARTITION BY department_id)' },
+        { name: 'ORDER BY in OVER', detail: 'Order rows inside the window — needed for ranking and running totals.', example: 'sum(total) OVER (ORDER BY order_date)' },
+        { name: 'Ranking functions', detail: 'row_number (always unique), rank (gaps on ties), dense_rank (no gaps), ntile(n).', example: 'rank() OVER (ORDER BY salary DESC)' },
+        { name: 'LAG / LEAD', detail: 'Peek at a previous or next row without a self-join.', example: 'lag(total) OVER (ORDER BY order_date)' },
+        { name: 'Running totals', detail: 'A windowed sum with ORDER BY accumulates as rows progress.', example: 'sum(total) OVER (ORDER BY order_date) AS running' },
+      ],
+    },
     challenges: [
       { id: 'w1', level: 4, title: 'ROW_NUMBER', ordered: true,
         prompt: 'Return employee name, salary, and a row number (column rn) ordered by salary descending.',
@@ -523,6 +642,16 @@ export const TOPICS = [
     id: 'ctes',
     name: '12 · CTEs & Recursion',
     blurb: 'WITH clauses, chained CTEs, RECURSIVE, generate_series.',
+    learn: {
+      summary: 'A Common Table Expression (CTE) is a named temporary result defined with WITH. It makes complex queries readable and enables recursion.',
+      concepts: [
+        { name: 'WITH … AS (…)', detail: 'Name a subquery once, then reference it like a table in the main query.', example: 'WITH d AS (SELECT department_id, avg(salary) a FROM employees GROUP BY department_id) SELECT * FROM d WHERE a > 70000;' },
+        { name: 'Chained CTEs', detail: 'Define several CTEs separated by commas; later ones can use earlier ones.', example: 'WITH a AS (…), b AS (SELECT … FROM a) SELECT …' },
+        { name: 'RECURSIVE', detail: 'A CTE that references itself: an anchor query UNION ALL a recursive step.', example: 'WITH RECURSIVE t(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM t WHERE n < 10) SELECT n FROM t;' },
+        { name: 'Hierarchies', detail: 'Recursion walks tree/graph data such as org charts and category trees.', example: 'anchor: managees of X · step: managees of the managees' },
+        { name: 'generate_series', detail: 'Generate a sequence of numbers or dates without any table.', example: 'SELECT generate_series(1, 5);' },
+      ],
+    },
     challenges: [
       { id: 'ct1', level: 3, title: 'Basic CTE', ordered: true,
         prompt: 'Using a CTE that computes average salary per department, return the department_id values whose average salary exceeds 70000, ordered by department_id.',
@@ -571,6 +700,17 @@ export const TOPICS = [
     id: 'json',
     name: '13 · JSON / JSONB',
     blurb: '->, ->>, containment, array functions, building JSON.',
+    learn: {
+      summary: 'PostgreSQL stores and queries JSON natively. Prefer jsonb (binary, de-duplicated keys, indexable) over plain json for most work.',
+      concepts: [
+        { name: '-> vs ->>', detail: '-> returns a JSON value; ->> returns it as text. Chain them to go deeper.', example: "info->'tags'  vs  info->>'tier'" },
+        { name: 'Array index', detail: 'Index into a JSON array by position (0-based).', example: "info->'tags'->>0" },
+        { name: 'Key existence ( ? )', detail: 'Test whether a key or array element is present.', example: "info->'tags' ? 'priority'" },
+        { name: 'Containment ( @> )', detail: 'Test whether the JSON contains a given fragment.', example: 'info->\'tags\' @> \'["vip"]\'' },
+        { name: 'Array functions', detail: 'jsonb_array_length, and jsonb_array_elements(_text) to expand arrays into rows.', example: "jsonb_array_length(info->'tags')" },
+        { name: 'Build & cast', detail: 'jsonb_build_object builds JSON; cast extracted text with ::type.', example: "jsonb_build_object('name', name, 'tier', info->>'tier')" },
+      ],
+    },
     challenges: [
       { id: 'js1', level: 3, title: 'Extract text field',
         prompt: "Return each customer name and their tier (the 'tier' field inside the info JSON) as a text column called tier.",
@@ -619,6 +759,17 @@ export const TOPICS = [
     id: 'dml-ddl',
     name: '14 · Data Modification & DDL',
     blurb: 'INSERT, UPDATE, DELETE, UPSERT, ALTER, VIEW, INDEX.',
+    learn: {
+      summary: 'DML changes data (INSERT/UPDATE/DELETE); DDL changes structure (CREATE/ALTER). Always scope UPDATE and DELETE with WHERE — without it they hit every row.',
+      concepts: [
+        { name: 'INSERT', detail: 'Add rows with VALUES, or from a query with INSERT … SELECT.', example: "INSERT INTO departments (id, name) VALUES (6, 'Legal');" },
+        { name: 'UPDATE … WHERE', detail: 'Change columns on matching rows. Forgetting WHERE updates everything.', example: 'UPDATE employees SET salary = salary * 1.1 WHERE department_id = 4;' },
+        { name: 'DELETE … WHERE', detail: 'Remove matching rows. Same caution as UPDATE.', example: "DELETE FROM orders WHERE status = 'cancelled';" },
+        { name: 'UPSERT (ON CONFLICT)', detail: 'Insert, but if a key already exists, update instead (or DO NOTHING).', example: 'INSERT … ON CONFLICT (id) DO UPDATE SET budget = EXCLUDED.budget' },
+        { name: 'DDL: CREATE / ALTER', detail: 'Create tables, add columns, define views for reusable queries.', example: 'ALTER TABLE employees ADD COLUMN active BOOLEAN DEFAULT true;' },
+        { name: 'Views', detail: 'A named, saved SELECT you can query like a table.', example: "CREATE VIEW delivered_orders AS SELECT * FROM orders WHERE status='delivered';" },
+      ],
+    },
     challenges: [
       { id: 'd1', level: 2, title: 'INSERT a row', type: 'mutation',
         prompt: "Insert a new department: id 6, name 'Legal', location 'Paris', budget 200000.",

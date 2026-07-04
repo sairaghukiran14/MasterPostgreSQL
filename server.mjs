@@ -12,7 +12,7 @@ const TYPES = {
   '.map': 'application/json', '.svg': 'image/svg+xml',
 };
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   try {
     let path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     if (path === '/') path = '/index.html';
@@ -27,4 +27,17 @@ createServer(async (req, res) => {
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' }).end('Not found');
   }
-}).listen(PORT, () => console.log(`Serving ${ROOT} on http://localhost:${PORT}`));
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n⚠  Port ${PORT} is already in use.`);
+    console.error(`   Something else is serving on it. Options:`);
+    console.error(`     • Stop it:   lsof -ti tcp:${PORT} | xargs kill`);
+    console.error(`     • Or pick another port:   PORT=8080 npm start\n`);
+    process.exit(1);
+  }
+  throw err;
+});
+
+server.listen(PORT, () => console.log(`Serving ${ROOT} on http://localhost:${PORT}`));

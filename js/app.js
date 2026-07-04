@@ -158,8 +158,44 @@ function renderSidebar() {
   $('#overall-bar').style.width = `${(solvedCount / ALL_CHALLENGES.length) * 100}%`;
 }
 
+let learnOpen = localStorage.getItem('pg_learn_open') !== '0';
+
+function renderLearn() {
+  const box = $('#learn-card');
+  box.innerHTML = '';
+  const topic = TOPICS.find(t => t.id === current.topicId);
+  if (!topic || !topic.learn) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  const learn = topic.learn;
+
+  const head = el('button', 'learn-head');
+  head.innerHTML = `<span class="learn-title">📚 Concepts to learn · <b>${topic.name.replace(/^\d+ · /, '')}</b></span>
+    <span class="learn-toggle">${learnOpen ? 'Hide ▲' : `Show ${learn.concepts.length} ideas ▼`}</span>`;
+  head.onclick = () => {
+    learnOpen = !learnOpen;
+    localStorage.setItem('pg_learn_open', learnOpen ? '1' : '0');
+    renderLearn();
+  };
+  box.appendChild(head);
+
+  const body = el('div', 'learn-body');
+  body.style.display = learnOpen ? 'block' : 'none';
+  if (learn.summary) body.appendChild(el('p', 'learn-summary', learn.summary));
+  const grid = el('div', 'concept-grid');
+  for (const c of learn.concepts) {
+    const card = el('div', 'concept');
+    card.appendChild(el('div', 'concept-name', c.name));
+    card.appendChild(el('div', 'concept-detail', c.detail));
+    if (c.example) card.appendChild(el('code', 'concept-ex', c.example));
+    grid.appendChild(card);
+  }
+  body.appendChild(grid);
+  box.appendChild(body);
+}
+
 function renderChallenge() {
   const ch = current;
+  renderLearn();
   $('#ch-topic').textContent = ch.topicName;
   $('#ch-title').textContent = ch.title;
   $('#ch-level').textContent = `${LEVEL_NAMES[ch.level]} ${'●'.repeat(ch.level)}${'○'.repeat(5 - ch.level)}`;
